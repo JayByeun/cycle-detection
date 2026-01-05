@@ -1,15 +1,14 @@
-import pandas as pd
+from generate_data import generate_dummy_data
 from cycle_detector import detect_cycles
 
-df = pd.read_csv("data/dummy_timeseries.csv", parse_dates=["Local_Time"])
+if __name__ == "__main__":
+    print("Generating dummy data...")
+    generate_dummy_data("data/dummy_mwsel.csv")
 
-result = detect_cycles(df)
+    print("Detecting cycles...")
+    detect_cycles(
+        csv_path="data/dummy_mwsel.csv",
+        db_path="cycle_results.db"
+    )
 
-summary = result.groupby(["Unit", "RunNumber"]).agg(
-    QtyFullCycles=("PartialCycleType", lambda x: (x == 1.0).sum()),
-    QtyPartial_75=("PartialCycleType", lambda x: (x == 0.75).sum()),
-    QtyPartial_50=("PartialCycleType", lambda x: (x == 0.5).sum()),
-    QtyPartial_10=("PartialCycleType", lambda x: (x == 0.1).sum()),
-)
-
-print(summary)
+    print("Pipeline finished successfully")

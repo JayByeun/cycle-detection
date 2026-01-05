@@ -1,29 +1,46 @@
 import pandas as pd
 import numpy as np
 
-np.random.seed(42)
 
-rows = []
-start_time = pd.Timestamp("2024-01-01 00:00:00")
+def generate_dummy_data(
+    output_path="data/dummy_mwsel.scv"
+):
+    np.random.seed(42)
 
-for run in [1, 2]:
-    mw = 0
-    for i in range(120):
-        if i % 30 < 15:
-            mw += np.random.uniform(0.5, 2.0) # ramp up
-        else:
-            mw -= np.random.uniform(0.5, 2.0) # drop
+    rows = []
+    start = pd.Timestamp.utcnow().floor("min")
+
+    for run in [1, 2]:
+        mw = 0
+        run_start = start + pd.Timedelta(minutes=(run - 1) * 120) # create 120 data with interval 1 min
+        time_index = pd.date_range(
+            start=run_start,
+            periods=120,
+            freq="1min",
+            tz="UTC"
+        )
         
-        mw = max(mw, 0)
+        for t in time_index:
+            step = len(rows) % 30
+            if step < 15:
+                mw += np.random.uniform(0.5, 2.0) # ramp up
+            else:
+                mw -= np.random.uniform(0.5, 2.0) # drop
 
-        rows.append({
-            "Local_time": start_time + pd.Timedelta(minutes=i),
-            "Unit": "U1",
-            "RunNumber": run,
-            "MWSEL": round(mw, 2)
-        })
+            mw = max(mw, 0)
 
-df = pd.DataFrame(rows)
-df.to_csv("data/dummy_mwsel.csv", index=False)
+            rows.append({
+                "Local_time": t,
+                "Unit": "U1",
+                "RunNumber": run,
+                "MWSEL": round(mw, 2)
+            }) # output
 
-print("Dummy data created:", df.shape)
+    df = pd.DataFrame(rows)
+    df.to_csv(output_path, index=False)
+
+    print("Dummy data created:", df.shape)
+    return df
+
+if __name__=="__main__":
+    generate_dummy_data()
