@@ -89,6 +89,7 @@ def detect_cycles(
 
     # summary per run (summary table)
     summary = df.groupby(["Unit", "RunNumber"]).agg(
+        StartTime = ('Local_time', lambda x: x.iloc[0]),
         QtyFullCycles = ("cycle_type", lambda x: 1+ (x == 1).sum()),
         QtyPartialCycles_75 = ("cycle_type", lambda x: (x == 0.75).sum()),
         QtyPartialCycles_50 = ("cycle_type", lambda x: (x == 0.5).sum()),
