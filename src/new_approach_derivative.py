@@ -122,3 +122,12 @@ def detect_cycles_diff(
 if __name__ == "__main__":
     df, summary = detect_cycles_diff()
     print("Cycle detection completed")
+
+
+# grafana queries
+# SELECT
+#     CAST(strftime('%s', StartTime) AS INTEGER) AS time,
+#     QtyFullCycles AS value,
+#     'Run_' || CAST(RunNumber AS TEXT) AS metric
+# FROM cycle_summary
+# ORDER BY StartTime;
