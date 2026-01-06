@@ -65,9 +65,9 @@ def detect_cycles(
     # cycle grouping when peak occur -> +1
     df["cycle_group"] = df["max_mwsel"].notna().groupby([df["Unit"], df["RunNumber"]]).cumsum()
 
-    # partial cycle drop
     df["max_group"] = g["max_mwsel"].ffill()
 
+    # partial cycle drop
     df["partial_drop"] = np.where(
         (df["cycle_group"].shift(-1) > df["cycle_group"]) & (df["max_group"] > 20),
         (df["max_group"] - df["min_mwsel"]) / df["max_group"],
@@ -97,7 +97,6 @@ def detect_cycles(
     ).reset_index()
 
     print(summary)
-
 
     conn = sqlite3.connect("cycle_results.db")
 
